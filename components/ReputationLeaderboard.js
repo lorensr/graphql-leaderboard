@@ -6,7 +6,7 @@ const USERS_STARTING_OFFSET = 12945
 const USERS_PER_PAGE = 100
 
 function ReputationLeaderboard ({ data: { User, loading, networkStatus }, loadMoreUsers }) {
-  console.log('render', User.length, loading, networkStatus)
+  console.log('render', User && User.length, loading, networkStatus)
   if (User && User.length) {
     return (
       <section>

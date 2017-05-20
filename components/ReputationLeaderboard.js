@@ -1,11 +1,12 @@
 import { gql, graphql } from 'react-apollo'
 
 // https://twitter.com/lorendsr/status/865693795601592320
-const USERS_STARTING_OFFSET = 12821
+const USERS_STARTING_OFFSET = 12945
 
 const USERS_PER_PAGE = 100
 
-function ReputationLeaderboard ({ data: { User, loading }, loadMoreUsers }) {
+function ReputationLeaderboard ({ data: { User, loading, networkStatus }, loadMoreUsers }) {
+  console.log('render', User.length, loading, networkStatus)
   if (User && User.length) {
     return (
       <section>
@@ -26,9 +27,9 @@ function ReputationLeaderboard ({ data: { User, loading }, loadMoreUsers }) {
             )}
           </tbody>
         </table>
-        {/* <button onClick={() => loadMoreUsers()}>
+        <button onClick={() => loadMoreUsers()}>
           {loading ? 'Loading...' : 'Show More'}
-        </button> */}
+        </button>
 
         <style jsx>{`
           section {
@@ -37,28 +38,9 @@ function ReputationLeaderboard ({ data: { User, loading }, loadMoreUsers }) {
             flex-direction: column;
             align-items: center;
           }
-          li {
-            display: block;
-            margin-bottom: 10px;
-          }
-          div {
-            align-items: center;
-            display: flex;
-          }
-          a {
-            font-size: 14px;
-            margin-right: 10px;
-            text-decoration: none;
-            padding-bottom: 0;
-            border: 0;
-          }
           span {
             font-size: 14px;
             margin-right: 5px;
-          }
-          ul {
-            margin: 0;
-            padding: 0;
           }
           button:before {
             align-self: center;
@@ -69,6 +51,9 @@ function ReputationLeaderboard ({ data: { User, loading }, loadMoreUsers }) {
             height: 0;
             margin-right: 5px;
             width: 0;
+          }
+          table {
+            margin-bottom: 20px;
           }
           th {
             text-align: left;
@@ -83,36 +68,21 @@ function ReputationLeaderboard ({ data: { User, loading }, loadMoreUsers }) {
   return <div>Loading</div>
 }
 
-// TODO variables not working w/ neo4j's server:
-//
-// graphql.language.VariableReference cannot be cast to graphql.language.IntValue
-// https://graphql.communitygraph.org/graphiql/?query=query%20usersByReputation(%24first%3A%20Int!%2C%20%24offset%3A%20Int!)%20%7B%0A%20%20User(orderBy%3A%20reputation_desc%2C%20first%3A%20%24first%2C%20offset%3A%20%24offset)%20%7B%0A%20%20%20%20name%0A%20%20%20%20reputation%0A%20%20%20%20__typename%0A%20%20%7D%0A%7D&operationName=usersByReputation&variables=%7B%0A%20%20%22first%22%3A%20100%2C%0A%20%20%22offset%22%3A%2010%0A%7D
-//
-// const usersByReputation = gql`
-//   query usersByReputation($first: Int!, $offset: Int!) {
-//     User(orderBy: reputation_desc, first: $first, offset: $offset) {
-//       name
-//       reputation
-//     }
-//   }
-// `
-
 const usersByReputation = gql`
-  query usersByReputation {
-    User(orderBy: reputation_desc, first: ${USERS_PER_PAGE}, offset: ${USERS_STARTING_OFFSET}) {
+  query usersByReputation($first: Int!, $offset: Int!) {
+    User(orderBy: reputation_desc, first: $first, offset: $offset) {
       name
       reputation
     }
   }
 `
 
-
 export default graphql(usersByReputation, {
   options: {
-    // variables: {
-    //   offset: USERS_STARTING_OFFSET,
-    //   first: USERS_PER_PAGE
-    // }
+    variables: {
+      offset: USERS_STARTING_OFFSET,
+      first: USERS_PER_PAGE
+    }
   },
   props: ({ data }) => ({
     data,
@@ -125,9 +95,10 @@ export default graphql(usersByReputation, {
           if (!fetchMoreResult) {
             return previousResult
           }
-          return Object.assign({}, previousResult, {
-            Users: [...previousResult.User, ...fetchMoreResult.User]
+          const updatedResult = Object.assign({}, previousResult, {
+            User: [...previousResult.User, ...fetchMoreResult.User]
           })
+          return updatedResult
         }
       })
     }

@@ -4,8 +4,9 @@
   "private": true,
   "scripts": {
     "dev": "next",
+    "start": "next start",
     "build": "next build && next export",
-    "start": "next start"
+    "deploy": "npm run build && cd out && now"
   },
   "dependencies": {
     "graphql": "^0.9.3",

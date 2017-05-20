@@ -11,18 +11,20 @@ function ReputationLeaderboard ({ data: { User, loading }, loadMoreUsers }) {
       <section>
         <h1>GraphQL Community Reputation Leaderboard</h1>
         <table>
-          <tr>
-            <th>Rank</th>
-            <th>Reputation</th>
-            <th>Name</th>
-          </tr>
-          {User.map((user, index) =>
-            <tr key={index}>
-              <td>{index + 1}</td>
-              <td>{user.reputation}</td>
-              <td>{user.name}</td>
+          <tbody>
+            <tr>
+              <th>Rank</th>
+              <th>Reputation</th>
+              <th>Name</th>
             </tr>
-          )}
+            {User.map((user, index) =>
+              <tr key={index}>
+                <td>{index + 1}</td>
+                <td>{user.reputation}</td>
+                <td>{user.name}</td>
+              </tr>
+            )}
+          </tbody>
         </table>
         {/* <button onClick={() => loadMoreUsers()}>
           {loading ? 'Loading...' : 'Show More'}

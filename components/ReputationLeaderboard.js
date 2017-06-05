@@ -82,7 +82,8 @@ export default graphql(usersByReputation, {
     variables: {
       offset: USERS_STARTING_OFFSET,
       first: USERS_PER_PAGE
-    }
+    },
+    notifyOnNetworkStatusChange: true
   },
   props: ({ data }) => ({
     data,
